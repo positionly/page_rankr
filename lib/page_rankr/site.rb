@@ -11,9 +11,10 @@ module PageRankr
       @uri = Addressable::URI.parse(site)
       @domain = PublicSuffix.parse(@uri.host || '', default_rule: nil)
 
-      PublicSuffix.valid?(@domain, default_rule: nil) or raise DomainInvalid, "The domain provided is invalid.1"
+    rescue PublicSuffix::DomainNotAllowed
+      @domain = PublicSuffix::Domain.name_to_labels(@uri.host)
     rescue PublicSuffix::DomainInvalid, Addressable::URI::InvalidURIError
-      raise DomainInvalid, "The domain provided is invalid."
+      raise DomainInvalid, 'The domain provided is invalid.'
     end
 
     def scheme
