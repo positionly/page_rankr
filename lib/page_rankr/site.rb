@@ -12,7 +12,7 @@ module PageRankr
       @domain = PublicSuffix.parse(@uri.host || '', default_rule: nil)
 
     rescue PublicSuffix::DomainNotAllowed
-      @domain = PublicSuffix::Domain.name_to_labels(@uri.host)
+      @domain = PublicSuffix::Domain.new(PublicSuffix::Domain.name_to_labels(@uri.host))
     rescue PublicSuffix::DomainInvalid, Addressable::URI::InvalidURIError
       raise DomainInvalid, 'The domain provided is invalid.'
     end
@@ -22,7 +22,7 @@ module PageRankr
     end
 
     def domain
-      @domain.domain
+      @domain.domain || @uri.host
     end
 
     def subdomain
